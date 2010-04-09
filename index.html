@@ -4,9 +4,24 @@
 </head>
 <body>
 <h1>Matrix Command Shell</h1>
-<form name="command" action="/data">
+<h2>Input:</h2>
+<form name="command" action="/">
 Command: <input type="text" name="command" />
 <input type="submit" value="Submit" />
 </form>
+<h2>Output:</h2>
+<pre>
+<span id="output">
+</pre>
+<script type="text/javascript"><!-- 
+var updateOutput = function() {
+ var http=new XMLHttpRequest();
+ http.open("GET", "/data", false);
+ http.send();
+ document.getElementById("output").innnerHTML=http.responseXML;
+ setTimeout("updateOutput()", 500);
+};
+updateOutput();
+--></script>
 </body>
 </html>
