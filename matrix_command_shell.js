@@ -12,7 +12,6 @@ child.stdout.addListener(
   matrix_data += data;
  }
 );
-if(0) {
 http.createServer(
  function (req, res) {
   setTimeout(
@@ -25,5 +24,4 @@ http.createServer(
   );
  }
 ).listen(8000);
-}
 sys.puts('Server running at http://127.0.0.1:8000/');
