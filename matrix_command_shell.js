@@ -8,7 +8,8 @@ var path = require('path');
 
 // Spawn child process
 child_process.spawn('mkfifo', ['matrix_pipe']);
-var child = child_process.spawn('cat', ['matrix_pipe']);
+//var child = child_process.spawn('cat', ['matrix_pipe']);
+var child = child_process.spawn('cat');
 var matrix_data = '';
 child.stdout.addListener(
  'data',
@@ -52,6 +53,10 @@ var server = http.createServer(
  function (req, res) {
   var uri = url.parse(req.url).pathname;
   if(uri == '/') {
+   var query = url.parse(req.url, true).query;
+   if(typeof(query) != 'undefined' && 'command' in query) {
+    child.stdin.write(query.command + "\n");
+   }
    loadHTMLFile('/index.html', res);
   } else if(uri == '/data') {
    res.writeHead(200, {'Content-Type': 'text/plain'});
@@ -63,7 +68,7 @@ var server = http.createServer(
   }
  }
 );
-if(server.listen(3000)) {
+if(!server.listen(3000)) {
  sys.puts('Server running at http://127.0.0.1:3000/');
 } else {
  sys.puts('Server failed to connect to socket');
