@@ -7,8 +7,6 @@ var child_process = require('child_process');
 var path = require('path');
 
 // Spawn child process
-child_process.spawn('mkfifo', ['matrix_pipe']);
-//var child = child_process.spawn('cat', ['matrix_pipe']);
 var child = child_process.spawn('cat');
 var matrix_data = '';
 child.stdout.addListener(
