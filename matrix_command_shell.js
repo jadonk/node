@@ -14,14 +14,9 @@ child.stdout.addListener(
 );
 http.createServer(
  function (req, res) {
-  setTimeout(
-   function () {
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.write(matrix_data);
-    res.close();
-   },
-   2000
-  );
+  res.writeHead(200, {'Content-Type': 'text/plain'});
+  res.write(matrix_data);
+  res.close();
  }
 ).listen(8000);
 sys.puts('Server running at http://127.0.0.1:8000/');
