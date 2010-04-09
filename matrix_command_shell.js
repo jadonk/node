@@ -57,6 +57,7 @@ http.createServer(
    res.writeHead(200, {'Content-Type': 'text/plain'});
    res.write(matrix_data);
    res.close();
+   //sys.puts('Served request for data');
   } else {
    loadHTMLFile(uri, res);
   }
