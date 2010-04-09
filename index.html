@@ -18,7 +18,7 @@ var updateOutput = function() {
  var http=new XMLHttpRequest();
  http.open("GET", "/data", false);
  http.send();
- document.getElementById("output").innnerHTML=http.responseXML;
+ document.getElementById("output").innerHTML=http.responseText;
  setTimeout("updateOutput()", 500);
 };
 updateOutput();

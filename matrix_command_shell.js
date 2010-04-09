@@ -48,7 +48,7 @@ function loadHTMLFile(uri, res) {
   }
  );
 }
-http.createServer(
+var server = http.createServer(
  function (req, res) {
   var uri = url.parse(req.url).pathname;
   if(uri == '/') {
@@ -62,5 +62,9 @@ http.createServer(
    loadHTMLFile(uri, res);
   }
  }
-).listen(3000);
-sys.puts('Server running at http://127.0.0.1:3000/');
+);
+if(server.listen(3000)) {
+ sys.puts('Server running at http://127.0.0.1:3000/');
+} else {
+ sys.puts('Server failed to connect to socket');
+}
