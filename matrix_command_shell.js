@@ -1,9 +1,11 @@
+// Copyright (C) 2010 Texas Instruments, Jason Kridner
 var sys = require('sys'); 
 var http = require('http');
 var fs = require('fs');
 var url = require('url');
 var child_process = require('child_process');
 
+// Spawn child process
 child_process.spawn('mkfifo', ['matrix_pipe']);
 var child = child_process.spawn('cat', ['matrix_pipe']);
 var matrix_data = '';
@@ -14,6 +16,8 @@ child.stdout.addListener(
   matrix_data += data;
  }
 );
+
+// Serve web page and notify user
 http.createServer(
  function (req, res) {
   var uri = url.parse(req.url).pathname;
