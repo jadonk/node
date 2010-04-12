@@ -19,9 +19,9 @@ var updateOutput = function() {
  http.open("GET", "/data", false);
  http.send();
  document.getElementById("output").innerHTML=http.responseText;
- setTimeout("updateOutput()", 1000);
+ setTimeout("updateOutput()", 10000);
 };
-updateOutput();
+setTimeout("updateOutput()", 10000);
 --></script>
 </body>
 </html>

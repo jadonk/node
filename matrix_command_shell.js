@@ -8,7 +8,7 @@ var path = require('path');
 
 // Spawn child process
 var child = child_process.spawn('cat');
-var matrix_data = '';
+matrix_data = '';
 child.stdout.addListener(
  'data',
  function (data) {
@@ -31,7 +31,7 @@ function loadHTMLFile(uri, res) {
    }
    fs.readFile(
     filename,
-    "text",
+    'text',
     function(err, file) {
      if(err) {
       res.sendHeader(500, {"Content-Type": "text/plain"});
@@ -47,8 +47,9 @@ function loadHTMLFile(uri, res) {
   }
  );
 }
+response = false;
 var server = http.createServer(
- function (req, res) {
+ function(req, res) {
   var uri = url.parse(req.url).pathname;
   if(uri == '/') {
    var query = url.parse(req.url, true).query;
@@ -57,9 +58,26 @@ var server = http.createServer(
    }
    loadHTMLFile('/index.html', res);
   } else if(uri == '/data') {
-   res.writeHead(200, {'Content-Type': 'text/plain'});
-   res.write(matrix_data);
-   res.close();
+   var respond = true;
+   response = res;
+   respondWithUpdate = new Function('data',
+    'if(response != "undefined" && response) {'
+//    + ' clearTimeout(respondWithNoUpdate);'
+    + ' response.writeHead(200, {"Content-Type": "text/plain"});'
+    + ' response.write(matrix_data);'
+    + ' response.close();'
+    + '}'
+   );
+   child.stdout.addListener('data', respondWithUpdate);
+   var respondWithNoUpdate = setTimeout(
+    function() {
+     res.writeHead(200, {'Content-Type': 'text/plain'});
+     res.write(matrix_data);
+     res.close();
+     child.stdout.removeListener('data', respondWithUpdate);
+    },
+    10000
+   );
    //sys.puts('Served request for data');
   } else {
    loadHTMLFile(uri, res);
