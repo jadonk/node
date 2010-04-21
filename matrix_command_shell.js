@@ -1,3 +1,4 @@
+#!/usr/bin/env ./node
 // Copyright (C) 2010 Texas Instruments, Jason Kridner
 var sys = require('sys'); 
 var http = require('http');
@@ -5,17 +6,33 @@ var fs = require('fs');
 var url = require('url');
 var child_process = require('child_process');
 var path = require('path');
+var events = require('events');
 
 // Spawn child process
 var child = child_process.spawn('cat');
-matrix_data = '';
+var matrix = {};
+matrix.data = '';
+matrix.emitter = new events.EventEmitter;
 child.stdout.addListener(
  'data',
  function (data) {
-  sys.puts(data);
-  matrix_data += data;
+  sys.puts('New data: ' + data);
+  matrix.data += data;
+  matrix.emitter.emit('data', matrix.data);
  }
 );
+matrix.getData = function(res) {
+ var myListener = {};
+ myListener = function(data) {
+  sys.puts("Responding"); 
+  res.writeHead(200, {"Content-Type": "text/plain"});
+  res.write(matrix.data + data);
+  res.close();
+  matrix.emitter.removeListener('data', myListener);
+ };
+ matrix.emitter.addListener('data', myListener);
+ setTimeout(function() {sys.puts("Timeout"); myListener('');}, 10000);
+}
 
 // Serve web page and notify user
 function loadHTMLFile(uri, res) {
@@ -60,25 +77,7 @@ var server = http.createServer(
   } else if(uri == '/data') {
    var respond = true;
    response = res;
-   respondWithUpdate = new Function('data',
-    'if(response != "undefined" && response) {'
-//    + ' clearTimeout(respondWithNoUpdate);'
-    + ' response.writeHead(200, {"Content-Type": "text/plain"});'
-    + ' response.write(matrix_data);'
-    + ' response.close();'
-    + '}'
-   );
-   child.stdout.addListener('data', respondWithUpdate);
-   var respondWithNoUpdate = setTimeout(
-    function() {
-     res.writeHead(200, {'Content-Type': 'text/plain'});
-     res.write(matrix_data);
-     res.close();
-     child.stdout.removeListener('data', respondWithUpdate);
-    },
-    10000
-   );
-   //sys.puts('Served request for data');
+   matrix.getData(res);
   } else {
    loadHTMLFile(uri, res);
   }
