@@ -14,14 +14,37 @@ Command: <input type="text" name="command" />
 <span id="output">(output goes here)</span>
 </pre>
 <script type="text/javascript"><!-- 
-var updateOutput = function() {
- var http=new XMLHttpRequest();
- http.open("GET", "/data", false);
- http.send();
- document.getElementById("output").innerHTML=http.responseText;
- setTimeout("updateOutput()", 10000);
+var update = function(req) {
+ if(req.readyState == 4) {
+  if(req.status == 200) {
+   document.getElementById("output").innerHTML=req.responseText;
+  }
+  req.go();
+ }
+}
+var pollData = function() {
+ var httpReq = new XMLHttpRequest();
+ httpReq.onreadystatechange = function() { update(httpReq); };
+ httpReq.go = function() {
+  httpReq.open("GET", "/event", true);
+  httpReq.send();
+ }
+ httpReq.go();
 };
-setTimeout("updateOutput()", 10000);
+var sendCommand = function() {
+ var command = document.forms['command'].command.value;
+ var httpReq = new XMLHttpRequest();
+ httpReq.open("POST", "/data?command=" + escape(command), false);
+ httpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+ httpReq.send();
+ document.getElementById("output").innerHTML=httpReq.responseText;
+};
+document.forms['command'].onsubmit = function() {
+ sendCommand();
+ pollData();
+ return(false);
+}
+pollData();
 --></script>
 </body>
 </html>

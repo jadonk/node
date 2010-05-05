@@ -21,17 +21,25 @@ child.stdout.addListener(
   matrix.emitter.emit('data', matrix.data);
  }
 );
-matrix.getData = function(res) {
+matrix.getData = function(res, wait) {
  var myListener = {};
  myListener = function(data) {
   sys.puts("Responding"); 
   res.writeHead(200, {"Content-Type": "text/plain"});
   res.write(matrix.data + data);
   res.close();
-  matrix.emitter.removeListener('data', myListener);
+  if(wait) {
+   matrix.emitter.removeListener('data', myListener);
+  }
  };
- matrix.emitter.addListener('data', myListener);
- setTimeout(function() {sys.puts("Timeout"); myListener('');}, 10000);
+ if(wait) {
+  sys.puts("Waiting for data");
+  matrix.emitter.addListener('data', myListener);
+  setTimeout(function() {sys.puts("Timeout"); myListener('');}, 10000);
+ } else {
+  sys.puts("Not waiting");
+  myListener('');
+ }
 }
 
 // Serve web page and notify user
@@ -64,20 +72,26 @@ function loadHTMLFile(uri, res) {
   }
  );
 }
-response = false;
 var server = http.createServer(
  function(req, res) {
   var uri = url.parse(req.url).pathname;
-  if(uri == '/') {
-   var query = url.parse(req.url, true).query;
-   if(typeof(query) != 'undefined' && 'command' in query) {
-    child.stdin.write(query.command + "\n");
+  sys.puts("Got request for " + uri);
+  var query = url.parse(req.url, true).query;
+  var command = false;
+  if(typeof(query) != 'undefined') {
+   //sys.puts("Request included query: " + query);
+   if('command' in query) {
+    command = query.command;
+    sys.puts("Query included command " + command);
+    child.stdin.write(command + "\n");
    }
+  }
+  if(uri == '/') {
    loadHTMLFile('/index.html', res);
   } else if(uri == '/data') {
-   var respond = true;
-   response = res;
-   matrix.getData(res);
+   setTimeout(function() { matrix.getData(res, false); }, 100);
+  } else if(uri == '/event') {
+   matrix.getData(res, true);
   } else {
    loadHTMLFile(uri, res);
   }
