@@ -65,7 +65,8 @@ function loadHTMLFile(uri, res) {
       return;
      }
      res.sendHeader(200, {"Content-Type": "text/html"});
-     res.write(file, "text");
+     var str = ("" + file).replace("<!--%OUTPUT%-->", matrix.data);
+     res.write(str, "text");
      res.close();
     }
    );
