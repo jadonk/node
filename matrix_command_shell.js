@@ -27,7 +27,7 @@ matrix.getData = function(res, wait) {
   sys.puts("Responding"); 
   res.writeHead(200, {"Content-Type": "text/plain"});
   res.write(matrix.data + data);
-  res.close();
+  res.end();
   if(wait) {
    matrix.emitter.removeListener('data', myListener);
   }
@@ -51,7 +51,7 @@ function loadHTMLFile(uri, res) {
    if(!exists) {
     res.sendHeader(404, {"Content-Type": "text/plain"});
     res.write("404 Not Found\n");
-    res.close();
+    res.end();
     return;
    }
    fs.readFile(
@@ -61,13 +61,13 @@ function loadHTMLFile(uri, res) {
      if(err) {
       res.sendHeader(500, {"Content-Type": "text/plain"});
       res.write(err + "\n");
-      res.close();
+      res.end();
       return;
      }
      res.sendHeader(200, {"Content-Type": "text/html"});
      var str = ("" + file).replace("<!--%OUTPUT%-->", matrix.data);
      res.write(str, "text");
-     res.close();
+     res.end();
     }
    );
   }
