@@ -1,0 +1,1 @@
+The main script is maintained synchronized with node.js to make sure it doesn't break with upgrades.  Here is the standalone script.
