@@ -1,4 +1,4 @@
-#!/usr/bin/env ./node
+#!/usr/bin/env node
 // Copyright (C) 2010 Texas Instruments, Jason Kridner
 var sys = require('sys'); 
 var http = require('http');
