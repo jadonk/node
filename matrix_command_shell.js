@@ -75,6 +75,7 @@ function loadHTMLFile(uri, res) {
 }
 var server = http.createServer(
  function(req, res) {
+  res.setEncoding("utf8");
   var uri = url.parse(req.url).pathname;
   sys.puts("Got request for " + uri);
   var query = url.parse(req.url, true).query;
