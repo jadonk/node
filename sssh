@@ -1,0 +1,2 @@
+#!/bin/sh
+ssh -i ~/.ssh/beagle2.key $*

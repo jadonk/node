@@ -1,0 +1,3 @@
+#!/bin/sh
+export GIT_SSH=`pwd`/sssh
+echo Setting GIT_SSH to $GIT_SSH
